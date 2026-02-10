@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aiple</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Madimi+One&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Kingthings Willowless';
+            src: url('Kingthings Willowless.woff') format('woff');
+        }
+
+
+        @font-face {
+            font-family: 'NicoMoji';
+            src: url('NicoMoji-Regular.woff') format('woff');
+        }
+
+        @font-face {
+            font-family: 'old-town';
+            src: url('old-town.woff2') format('woff2'),
+                url('old-town.woff') format('woff'),
+        }
+
+        @font-face {
+            font-family: 'antsypants';
+            src: url('antsypants.woff2') format('woff2'),
+                url('antsypants.woff') format('woff'),
+        }
+
+        :root {
+            --bg-purple: #AB9EFF;
+            --bg-blue: #6BD1FF;
+            --bg-green: #9CFC57;
+            --bg-yellow: #FBFF0F;
+            --apple-red: #FF3B30;
+            --accent: #ff00a6;
+            --accent2: #00aeff;
+            --wheel-1: #ffffff;
+            --wheel-2: #000000;
+            --wheel-size: 85vh;
+            --inner-size: calc(var(--wheel-size) * 0.4);
+        }
+
+        body,
+        html {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            perspective: 2000px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #page-card {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            transform-origin: center center;
+            /* Keeps rotation locked to the middle */
+        }
+
+        .page-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            overflow: hidden;
+            /* Prevents internal elements from pushing the frame */
+        }
+
+        .front {
+            font-family: 'Madimi One', sans-serif;
+
+            /* Set the gradient stops as fixed values */
+            background: radial-gradient(circle,
+                    var(--bg-yellow) 0%,
+                    var(--bg-yellow) 50%,
+                    var(--bg-green) 50%,
+                    var(--bg-green) 62.5%,
+                    var(--bg-blue) 62.5%,
+                    var(--bg-blue) 75%,
+                    var(--bg-purple) 75%,
+                    var(--bg-purple) 100%);
+
+            /* Make the background slightly larger than the screen so it can "zoom" */
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+
+            /* Animate the size for the zoom effect */
+            animation: radiant-zoom 5s ease-in-out infinite;
+        }
+
+        @keyframes radiant-zoom {
+
+            0%,
+            100% {
+                background-size: 100% 100%;
+            }
+
+            50% {
+                /* "Zoom" by making the background image larger than the container */
+                background-size: 120% 120%;
+            }
+        }
+
+        .marquee-top,
+        .marquee-bottom {
+            position: absolute;
+            width: 100%;
+            background: white;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 5;
+            /* padding: 10px 0; */
+            display: flex;
+            /* Key for seamless looping */
+        }
+
+        .marquee-top {
+            top: 0;
+        }
+
+        .marquee-bottom {
+            bottom: 0;
+        }
+
+        .marquee-text {
+            font-size: 1.5rem;
+            padding: 5px 0;
+        }
+
+        .marquee-t-1 {
+            animation: scroll-marquee 50s linear infinite;
+        }
+
+        .marquee-t-2 {
+            animation: scroll-marquee-2 50s linear infinite;
+            animation-delay: 25s;
+
+        }
+
+        .marquee-b-1 {
+            animation: scroll-marquee-reverse 50s linear infinite;
+
+        }
+
+        .marquee-b-2 {
+            animation: scroll-marquee-reverse-2 50s linear infinite;
+            animation-delay: 25s;
+        }
+
+
+        @keyframes scroll-marquee {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes scroll-marquee-2 {
+            0% {
+                transform: translateX(-200%);
+            }
+
+            100% {
+                transform: translateX(0%);
+            }
+        }
+
+        @keyframes scroll-marquee-reverse {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        @keyframes scroll-marquee-reverse-2 {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-200%);
+            }
+        }
+
+        .em-text {
+            font-weight: 700;
+            display: inline-block;
+            padding: 0 0.25rem;
+            transform: scaleX(1.5);
+        }
+
+        .em-text-1 {
+            font-weight: 700;
+            display: inline-block;
+            padding: 0 0.85rem;
+            transform: scaleX(1.5);
+        }
+
+        /* UI Positioning */
+
+        .main-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top-left-info {
+            position: absolute;
+            top: 3rem;
+            left: 1rem;
+        }
+
+        .time {
+            font-size: 7rem;
+            margin: 0;
+            line-height: 1;
+            font-family: 'NicoMoji', sans-serif;
+            font-weight: 400;
+            letter-spacing: -2px;
+        }
+
+        .date {
+            margin: 5px 0 0 0;
+            text-transform: uppercase;
+            font-size: 3rem;
+            letter-spacing: 3px;
+            transform: translateX(1rem);
+        }
+
+        .apple-container {
+            height: 90vh;
+            position: relative;
+            z-index: 15;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-3%);
+        }
+
+        .apple-img {
+            height: 100%;
+            filter: drop-shadow(0 0 20px #5d5d5d80);
+        }
+
+        .apple-leaf {
+            position: absolute;
+            top: 5%;
+            left: 35%;
+            height: 13%;
+            filter: drop-shadow(0 0 20px #5d5d5d80);
+            transform-origin: 100% 100%;
+            animation: leaf 5s cubic-bezier(0, 1, 0.5, 1) infinite;
+        }
+
+        @keyframes leaf {
+
+            40% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(-8deg);
+                /* Tilt left */
+            }
+
+            60% {
+                transform: rotate(5deg);
+                /* Tilt right */
+            }
+
+            70% {
+                transform: rotate(0deg);
+            }
+        }
+
+        .apple-face {
+            position: absolute;
+            top: 36%;
+            /* Adjust this to move face up/down */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 55%;
+            /* Scale the face size relative to the apple */
+            z-index: 20;
+            pointer-events: none;
+            /* Allows clicks to pass through to the button */
+        }
+
+        #apple-mouth {
+            animation: smile 20s ease-in-out infinite;
+            transform-origin: 40% 50%;
+        }
+
+        @keyframes smile {
+
+            70%,
+            90% {
+                transform: scaleX(1) scaleY(1) translateY(0);
+            }
+
+            87.5% {
+                transform: scaleX(1.5) scaleY(1.1) translateY(-10%);
+            }
+        }
+
+        #apple-right-eye,
+        #apple-left-eye {
+            transform-origin: 40% 50%;
+            animation: squish 20s ease-in-out infinite;
+        }
+
+        @keyframes squish {
+
+            70%,
+            90% {
+                transform: scaleX(1) translateY(0);
+            }
+
+            87.5% {
+                transform: scaleX(1.2) translateY(-10%);
+            }
+        }
+
+
+        .cls-1 {
+            animation: cheek 20s ease-in-out infinite;
+            transform-origin: center;
+            fill: #ff6cbc;
+        }
+
+        @keyframes cheek {
+
+            70%,
+            90% {
+                transform: translateY(0) scale(1);
+            }
+
+            87.5% {
+                transform: translateY(-10%) scale(1.1);
+            }
+        }
+
+        .call-to-action {
+            position: absolute;
+            right: -3rem;
+            top: 50%;
+            transform: translate(100%, -65%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 2rem;
+        }
+
+        .start-btn {
+            background: #ffffff;
+            background: linear-gradient(#fff, #fff 90%, #aeaeae);
+            color: #000;
+            border: 5px solid #000;
+            padding: 15px 30px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            font-size: 3.5rem;
+            z-index: 10;
+            filter: drop-shadow(0 3px 5px #000);
+            animation: start-btn 700ms ease-in-out infinite;
+        }
+
+        @keyframes start-btn {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .arrow {
+            width: 4rem;
+            margin: 0 5px;
+            display: inline-block;
+            transform: translateY(25%);
+            filter: drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 10px var(--accent));
+            animation: arrow-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 1px var(--accent)) drop-shadow(0 0 5px var(--accent));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 5px var(--accent)) drop-shadow(0 0 15px var(--accent));
+            }
+        }
+
+        .up-arrow,
+        .down-arrow {
+            width: 2.5rem;
+            margin: 0 5px;
+            display: inline-block;
+            transform: translateY(25%);
+            filter: drop-shadow(0 0 5px var(--accent2)) drop-shadow(0 0 10px var(--accent2));
+            animation: arrow-glow-2 2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-glow-2 {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 1px var(--accent2)) drop-shadow(0 0 5px var(--accent2));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 5px var(--accent2)) drop-shadow(0 0 15px var(--accent2));
+            }
+        }
+
+        .down-arrow {
+            transform: translateY(25%) rotate(180deg);
+            margin-left: 0;
+        }
+
+        /* BACK PAGE */
+        .back {
+            transform: rotateX(180deg);
+            backface-visibility: hidden;
+            background: url("sl_102521_46370_03.jpg") no-repeat fixed center;
+            background-size: 130%;
+        }
+
+
+        .back .marquee-top,
+        .back .marquee-bottom {
+            background: #000;
+            color: #fff;
+        }
+
+        .back .marquee-text {
+            font-family: 'Madimi One', sans-serif;
+            font-weight: 300;
+        }
+
+        .sidebar,
+        .controls {
+            padding: 10vh 4rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar {
+            width: 20vw;
+        }
+
+        .controls {
+            width: 15vw;
+        }
+
+        .main-stage {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: var(--wheel-size);
+            height: var(--wheel-size);
+        }
+
+        .wheel-container svg {
+            position: absolute;
+            transition: transform 15s cubic-bezier(0.1, 0, 0, 1);
+        }
+
+        #outer-wheel,
+        #inner-wheel {
+
+            will-change: transform;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+
+        #outer-wheel {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            font-family: "old-town", sans-serif;
+            word-spacing: -0.2rem;
+        }
+
+        #inner-wheel {
+            width: var(--inner-size);
+            height: var(--inner-size);
+            z-index: 2;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Kingthings Willowless", sans-serif;
+            filter: drop-shadow(0 0 5px #000000) drop-shadow(0 0 10px #00000080);
+        }
+
+        #outer-wheel path,
+        #inner-wheel path {
+            stroke: #acacac;
+            stroke-width: 5px;
+            stroke-linejoin: round;
+        }
+
+        .clock-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: calc(var(--wheel-size) / 5);
+            height: 5px;
+            background: var(--accent);
+            transform-origin: left center;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        /* The Triangle Head */
+        .hand-head {
+            position: absolute;
+            right: -22px;
+            /* Pulls the triangle slightly past the bar */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 25px solid var(--accent);
+            /* Triangle points right */
+        }
+
+        .sidebar h3 {
+            margin: 0;
+            padding: 0.25rem 0;
+            color: #fff;
+            text-align: center;
+            font-family: "antsypants", sans-serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        #history-log {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .history-scroll-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            transition: transform 0.5s ease;
+            /* Smooth transition when starting/stopping */
+        }
+
+        /* The Marquee Animation */
+        @keyframes marqueeScroll {
+
+            0%,
+            15% {
+                transform: translateY(0);
+            }
+
+            /* Pause at top */
+            45%,
+            60% {
+                transform: translateY(var(--scroll-dist));
+            }
+
+            /* Pause at bottom */
+            90%,
+            100% {
+                transform: translateY(0);
+            }
+
+            /* Return to top */
+        }
+
+        .scrolling-active {
+            animation: marqueeScroll linear infinite;
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+            font-family: monospace;
+            background: #fff;
+            border: #acacac 4px solid;
+            border-radius: 16px;
+        }
+
+        /* Container for the history item */
+        .history-item {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        /* Style for the Date and Time row */
+        .history-meta {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            display: flex;
+            /* justify-content: space-between; */
+            text-transform: uppercase;
+        }
+
+        /* Distinct style for the Result (Medicine & Number) */
+        .history-result {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .history-interval {
+            /* color: var(--accent); */
+            font-weight: 700;
+        }
+
+        .optional-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .optional {
+            padding: 0.75rem 0.25rem 0.25rem 0.25rem;
+            background: linear-gradient(#00aeff, #8ddbff 30%, #bae9ff 50%, #8ddbff 70%, #00aeff);
+            border: #0054b4 4px solid;
+            border-radius: 16px;
+            font-family: "old-town", sans-serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+        }
+
+        .optional:focus,
+        .optional.keyboard-focus {
+            background: linear-gradient(#8ddbff, #ffffff 30%, #ffffff 50%, #ffffff 70%, #8ddbff);
+            /* color: #0090e4; */
+            border: #4ac6ff 4px solid;
+            outline: none;
+            filter: drop-shadow(0 0 2px #ffffff);
+            transform: scale(1.1);
+            transition: transform 0.1s ease;
+        }
+
+        @keyframes text-pop {
+            0% {
+                transform: scale(0.6) rotate(97.5deg) translate(0, -5%);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.2) rotate(97.5deg) translate(0, -5%);
+            }
+
+            100% {
+                transform: scale(1) rotate(97.5deg) translate(0, -5%);
+                opacity: 1;
+            }
+        }
+
+        .swapped-text {
+            animation: text-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+
+        .stop-slice-text {
+            transform: translate(7%, 0) rotate(7.5deg);
+        }
+
+        .instructions,
+        .info {
+            background: #000;
+            color: #fff;
+            border: #acacac solid 4px;
+            border-radius: 16px;
+            font-size: 1.25rem;
+        }
+
+        .info {
+            padding: 1rem;
+            margin: 0 0 1rem 0;
+            line-height: 1.5;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding: 1rem;
+            margin: 0;
+            line-height: 2;
+        }
+
+        .instructions .arrow {
+            width: 2.5rem;
+        }
+
+        #spin-trigger {
+            margin-top: auto;
+            padding: 1.5rem 0;
+            font-family: "antsypants", sans-serif;
+            font-size: 3rem;
+            font-weight: 400;
+            border-radius: 24px;
+            cursor: pointer;
+            position: relative;
+            border: #d0006f solid 4px;
+            /* Matches your pink theme */
+
+            background: linear-gradient(#ff17ae, #ff7bd1 30%, #ffb3e4 50%, #ff7bd1 70%, #ff17ae);
+
+            color: #ffffff;
+            text-shadow:
+                0px 2px 0px #ffa3eb,
+                /* Top "shine" highlight */
+                0px -2px 2px #ff34d3,
+                /* Subtle rose-copper shadow */
+                0px 3px 6px #d0006f;
+            /* Depth shadow */
+
+            text-transform: uppercase;
+            animation: start-btn 700ms ease-in-out infinite;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Moving Light Reflection Overlay */
+        #spin-trigger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(to right,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            transform: skewX(-30deg);
+        }
+
+
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: radial-gradient(circle, var(--bg-yellow) 0%, var(--bg-yellow) 50%, var(--bg-green) 50%, var(--bg-green) 62.5%, var(--bg-blue) 62.5%, var(--bg-blue) 75%, var(--bg-purple) 75%, var(--bg-purple) 100%);
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            animation: radiant-zoom 5s ease-in-out infinite;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        @keyframes apple-drop-and-settle {
+            0% {
+                transform: translateY(-1200px) rotate(0deg);
+            }
+
+            40% {
+                transform: translateY(-3px) rotate(0deg);
+            }
+
+            60% {
+                transform: translateY(-3px) rotate(-6deg);
+            }
+
+            70% {
+                transform: translateY(-3px) rotate(5deg);
+            }
+
+            80% {
+                transform: translateY(-3px) rotate(-3deg);
+            }
+
+            100% {
+                transform: translateY(-3px) rotate(0deg);
+            }
+        }
+
+        /* Apple as the backdrop */
+        #modal-overlay .apple-container {
+            position: absolute;
+            z-index: 1001;
+            transform: translateY(-1200px) rotate(15deg);
+            /* Starting position */
+        }
+
+        /* Text floating on top of the apple */
+        .modal-content {
+            position: absolute;
+            z-index: 1002;
+            text-align: center;
+            width: 50%;
+            font-family: 'Madimi One', sans-serif;
+            margin-top: 2rem;
+        }
+
+        /* Styling adjustment for legibility on backdrop */
+        .modal-content p {
+            margin: 1rem 0;
+            font-weight: 400;
+            color: #000;
+            font-size: 2.5rem;
+        }
+
+        /* Trigger states */
+        #modal-overlay.active {
+            opacity: 1;
+        }
+
+        #modal-overlay.active .apple-container {
+            animation: apple-drop-and-settle 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        #modal-overlay.active .modal-content {
+            animation: apple-drop-and-settle 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .result {
+            font-size: 3.5rem;
+        }
+
+        .ok-btn {
+            margin-top: 4rem;
+            padding: .5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-family: 'Madimi One', sans-serif;
+        }
+
+        .ok-btn .arrow {
+            filter: drop-shadow(0 0 5px #ffffff75) drop-shadow(0 0 10px #ffffff75);
+            animation: arrow-glow-1 2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-glow-1 {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 1px #ffffff75) drop-shadow(0 0 5px #ffffff75);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 5px #ffffff75) drop-shadow(0 0 15px #ffffff75);
+            }
+        }
+
+
+        .is-flipped {
+            transform: rotateX(180deg);
+        }
+
+        .accent {
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="page-card">
+
+        <!----------- AI Page ----------->
+
+        <div class="page-face front">
+            <div class="marquee-top">
+                <div class="marquee-text marquee-t-1">
+                    Welcome to your ☆ <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆
+                    <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span
+                        class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text">
+                        AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text"> AI </span> ☆
+                    health assistant! &emsp;
+                </div>
+                <div class="marquee-text marquee-t-2">
+                    Welcome to your ☆ <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆
+                    <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span
+                        class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text">
+                        AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text"> AI </span> ☆
+                    health assistant! &emsp;
+                </div>
+            </div>
+
+            <div class="main-container">
+                <div class="top-left-info">
+                    <h1 class="time" id="live-clock">00:00:00</h1>
+                    <p class="date" id="live-date"></p>
+                </div>
+
+                <div class="apple-container">
+                    <img src="aiple.svg" class="apple-img">
+                    <img src="leaf.svg" class="apple-leaf">
+
+                    <svg class="apple-face" xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 500 210">
+                        <g id="Layer_1-2" data-name="Layer 1">
+                            <ellipse class="cls-1" cx="349" cy="51.5" rx="50" ry="51.5" />
+                            <ellipse class="cls-1" cx="50" cy="51.5" rx="50" ry="51.5" />
+                            <path id="apple-mouth"
+                                d="M85.01,43.63c-.58-.89-1.49-1.51-2.52-1.73-1.04-.22-2.12-.02-3.01,.56-.89,.58-1.51,1.49-1.73,2.52-.22,1.04-.02,2.12,.56,3.01h0c2.58,3.97,5.29,7.71,8.26,11.38,26.43,33.14,68.87,51.49,110.79,51.44,41.85,.32,84.73-17.57,110.72-51.32,2.89-3.72,5.54-7.56,8.01-11.6,.55-.91,.72-1.99,.47-3.02-.25-1.03-.9-1.92-1.81-2.47-.9-.55-1.99-.72-3.02-.47-1.03,.25-1.92,.9-2.47,1.8h0c-2.31,3.78-4.79,7.37-7.49,10.86-24.26,31.54-64.67,48.53-104.37,48.23-39.77,.04-79.77-17.34-104.59-48.47-2.79-3.45-5.34-6.97-7.77-10.71Z" />
+                            <path id="apple-right-eye"
+                                d="M124.49,46.96c-.3,1.02-1,1.87-1.93,2.37-.93,.5-2.03,.62-3.05,.31-1.02-.3-1.87-1-2.37-1.93-.5-.93-.62-2.03-.31-3.05h0c.51-1.69,1.02-3.28,1.59-4.9,5.17-13.73,13.36-31.6,32.83-32.95,19.49,1.12,27.83,19.2,32.75,32.98,.55,1.64,1.04,3.24,1.52,4.94,.29,1.02,.16,2.11-.36,3.04-.52,.92-1.39,1.61-2.41,1.89-1.02,.29-2.11,.16-3.04-.36-.93-.52-1.61-1.39-1.89-2.41h0c-.44-1.58-.89-3.05-1.4-4.55-4.26-12.98-12.99-27.43-25.13-27.53-12.15,.26-20.82,14.63-25.32,27.61-.52,1.49-1,2.97-1.47,4.54Z" />
+                            <path id="apple-left-eye"
+                                d="M212.48,46.97c-.31,1.02-1.01,1.87-1.94,2.37-.94,.5-2.03,.61-3.05,.3-1.01-.31-1.87-1.01-2.37-1.94-.5-.94-.61-2.03-.3-3.05,.52-1.7,1.04-3.3,1.63-4.93,5.25-13.83,13.82-31.66,33.29-32.91,19.49,1.01,28.21,19.05,33.21,32.93,.57,1.65,1.07,3.26,1.55,4.97,.29,1.02,.17,2.11-.35,3.04-.51,.93-1.38,1.61-2.4,1.9-1.02,.29-2.11,.17-3.04-.35-.93-.52-1.61-1.38-1.9-2.4h0c-.45-1.58-.91-3.06-1.43-4.58-4.36-13.06-13.29-27.44-25.6-27.52-12.33,.23-21.2,14.55-25.79,27.6-.54,1.5-1.02,2.98-1.51,4.56Z" />
+                        </g>
+                    </svg>
+
+                    <!-- <div class="pill-box box-1"></div>
+                    <div class="pill-box box-2"></div>
+                    <div class="pill-box box-3"></div> -->
+
+                    <div class="call-to-action">
+                        <p>Step on <img src="arrow-right.svg" alt="right arrow" class="arrow"> to start</p>
+                        <div class="start-btn" onclick="toggleFlip()">
+                            Ask Aiple
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="marquee-bottom">
+                <div class="marquee-text marquee-b-1">
+                    An ♡ <span class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp;
+                </div>
+                <div class="marquee-text marquee-b-2">
+                    An ♡ <span class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp;
+                </div>
+            </div>
+        </div>
+
+
+
+        <!----------- Wheel Page ----------->
+
+
+        <div class="page-face back">
+
+            <div class="marquee-top">
+                <div class="marquee-text marquee-t-1">
+                    Welcome to your ☆ <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆
+                    <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span
+                        class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text">
+                        AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text"> AI </span> ☆
+                    health assistant! &emsp;
+                </div>
+                <div class="marquee-text marquee-t-2">
+                    Welcome to your ☆ <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆
+                    <span class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span
+                        class="em-text"> AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text">
+                        AI </span> ☆ health assistant! &emsp; Welcome to your ☆ <span class="em-text"> AI </span> ☆
+                    health assistant! &emsp;
+                </div>
+            </div>
+
+            <div class="marquee-bottom">
+                <div class="marquee-text marquee-b-1">
+                    An ♡ <span class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp;
+                </div>
+                <div class="marquee-text marquee-b-2">
+                    An ♡ <span class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp; An ♡ <span
+                        class="em-text-1"> AIPLE </span> ♡ a day keeps the doctor away! &emsp;
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="info">
+                    Outter Wheel = Prescribed Medications<br>
+                    Inner Wheel = Medication Interval
+                </div>
+                <h3>Medication Record</h3>
+                <div id="history-log" class="history-list">
+                    <div class="history-scroll-wrapper"></div>
+                </div>
+            </div>
+
+            <div class="main-stage">
+                <div class="wheel-container">
+                    <svg id="outer-wheel" viewBox="0 0 500 500"></svg>
+                    <svg id="inner-wheel" viewBox="0 0 500 500"></svg>
+
+                    <svg id="center-caps" viewBox="0 0 500 500"
+                        style="position: absolute; z-index: 50; pointer-events: none;">
+                        <circle cx="250" cy="250" r="30" fill="var(--black)" />
+                        <circle cx="250" cy="250" r="8" fill="var(--accent)" stroke="#fff" stroke-width="3" />
+                    </svg>
+
+                    <div class="clock-hand">
+                        <div class="hand-head"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="optional-panel">
+                    <button class="optional" data-id="1" onclick="swapOption('Bromelain/L-cysteine', '1')">1</button>
+                    <button class="optional" data-id="13" onclick="swapOption('Dicyclomine', '13')">13</button>
+                    <button class="optional" data-id=22" onclick="swapOption('Phosphatidylserine', '22')">22</button>
+                    <button class="optional" data-id="30" onclick="swapOption('Biofermin', '30')">30</button>
+                    <button class="optional" data-id="10" onclick="swapOption('Loperamide', '10')">10</button>
+                    <button class="optional" data-id="29"
+                        onclick="swapOption('Chlorpheniramine Maleate', '29')">29</button>
+                    <button class="optional" data-id="26" onclick="swapOption('Phosphatidylserine', '26')">26</button>
+                    <button class="optional" data-id="15" onclick="swapOption('Loperamide', '15')">15</button>
+                    <button class="optional" data-id="20"
+                        onclick="swapOption('Dexchlorpheniramine Maleate', '20')">20</button>
+                    <button class="optional" data-id="8" onclick="swapOption('Tirzepatide', '8')">8</button>
+                </div>
+
+                <div class="instructions">
+                    <ul>
+                        <li>Step on <img src="arrow-up.svg" alt="up arrow" class="up-arrow"> <img src="arrow-up.svg"
+                                alt="up arrow" class="down-arrow">to change a number.</li>
+                        <li>Step on <img src="arrow-right.svg" alt="right arrow" class="arrow"> to spin the wheel.</li>
+                    </ul>
+                </div>
+
+                <button id="spin-trigger" onclick="spinWheels()">Spin</button>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+
+    <div id="modal-overlay">
+        <div class="apple-container">
+            <img src="bite.svg" class="apple-img">
+        </div>
+
+        <div class="modal-content">
+            <p style="line-height: 2;"></p>
+            <p>It’s time to take:
+                <br>
+                <span id="result-num" class="result"></span> <span id="result-1" class="result"></span>.
+            </p>
+            <p>Return for your next medication in:
+                <span id="result-2" class="result"></span> hrs.
+            </p>
+            <button class="ok-btn" onclick="closeModalAndFlipBack()">Step on<img src="arrow-right.svg" alt="right arrow"
+                    class="arrow">to close</button>
+        </div>
+    </div>
+
+    <script>
+
+        /* =========================================
+   1. DATA & CONFIGURATION
+   ============================================ */
+        const outerLabels = [
+            "1", "9", "15", "23", "11", "8", "14", "2", "16", "19",
+            "10", "6", "STOP", "17", "3", "12", "21", "4",
+            "13", "22", "7", "18", "5", "20"
+        ];
+
+        const innerLabels = ["4", "24", "12", "72", "8", "36"];
+
+        // Mapping the wheel numbers to their actual names for the Modal
+        const medicineMap = {
+            "1": "Bromelain/L-cysteine",
+            "2": "Ban Xia Xie Xin Tang",
+            "3": "Ma Zi Ren Wan",
+            "4": "Magnesium Glycinate",
+            "5": "Ibuprofen",
+            "6": "Oxolamine Citarate",
+            "7": "Melatonin",
+            "8": "Tirzepatide",
+            "9": "Buclizine",
+            "10": "Loperamide",
+            "11": "Bismuth Subcarbonate",
+            "12": "Dimethicone",
+            "STOP": "STOP",
+            "13": "Dicyclomine",
+            "14": "Doxycycline",
+            "15": "Loperamide",
+            "16": "Fluticasone Furoate/Vilanterol",
+            "17": "Calcium",
+            "18": "Amoxicillin (Trihydrate)",
+            "19": "Omeprazole",
+            "20": "Dexchlorpheniramine Maleate",
+            "21": "Salmon Oil, Omega-3",
+            "22": "Spironolactone",
+            "23": "Acetaminophen",
+            "24": "Cimetidine",
+            "25": "Benzonatate",
+            "26": "Phosphatidylserine",
+            "27": "Biofermin",
+            "28": "Famotidine",
+            "29": "Chlorpheniramine Maleate",
+            "30": "Methylphenidate",
+            "31": "Sertraline",
+            "32": "Lorazepam",
+        };
+
+        const CONFIG = {
+            spinDuration: 15000,               // 7.5 seconds for heavy feel
+            idleSpeed: 0.05,
+            radius: 250,
+            spinEasing: 'cubic-bezier(0.2, 0, 0, 1.08)', // High inertia + rebound
+            historyDelay: 2500,               // Match apple-drop animation
+            minFullSpins: 6,                   // Minimum rotations for momentum
+            tickVolume: 1,
+        };
+
+        const clickAudio = new Audio("button-click.wav");
+        clickAudio.volume = 1;
+
+        // State
+        let outerRotation = 0;
+        let innerRotation = 0;
+        let isSpinning = false;
+        let isFlipped = false;
+        let currentFocusIndex = -1;
+        let autoCloseTimer = null;
+
+        /* =========================================
+           2. AUDIO ENGINE
+           ============================================ */
+        // Update with your own source here (e.g., a local file or URL)
+        const TICK_SOURCE = "spinning-sound.mp3";
+
+        const tickAudio = new Audio(TICK_SOURCE);
+        tickAudio.load();
+
+        // We need to track the last "slice index" played to avoid double-ticks
+        let lastTickIndex = 0;
+
+        function playTick() {
+            const soundClone = tickAudio.cloneNode();
+            soundClone.volume = CONFIG.tickVolume;
+
+            soundClone.play().catch(e => {
+                // This catches the 'user must interact first' error
+                console.warn("Audio playback blocked by browser:", e);
+            });
+        }
+
+        /**
+         * Monitors the rotation during the CSS transition and triggers playTick()
+         */
+        function startTickEngine() {
+            const ow = document.getElementById('outer-wheel');
+            const startTime = performance.now();
+            const duration = CONFIG.spinDuration;
+
+            function check() {
+                if (!isSpinning) return;
+
+                // Get the current rotation from the computed style of the wheel
+                const style = window.getComputedStyle(ow);
+                const matrix = new WebKitCSSMatrix(style.transform);
+
+                // Convert matrix to degrees
+                const currentAngle = Math.abs(Math.atan2(matrix.b, matrix.a) * (180 / Math.PI));
+                const sliceAngle = 360 / outerLabels.length; // 15 degrees
+
+                // Calculate which slice we are on
+                const currentTickIndex = Math.floor(currentAngle / sliceAngle);
+
+                if (currentTickIndex !== lastTickIndex) {
+                    playTick();
+                    lastTickIndex = currentTickIndex;
+                }
+
+                // Keep checking until the spin duration ends
+                if (performance.now() - startTime < duration) {
+                    requestAnimationFrame(check);
+                }
+            }
+            requestAnimationFrame(check);
+        }
+
+        /* =========================================
+           3. WHEEL GENERATION
+           ============================================ */
+        function createWheel(id, labels, verticalText = false) {
+            const svg = document.getElementById(id);
+            if (!svg) return;
+
+            const count = labels.length;
+            const step = 360 / count;
+            const isOuter = id === 'outer-wheel';
+            const textRadiusMultiplier = isOuter ? 0.85 : 0.65;
+
+            let htmlContent = '';
+            labels.forEach((text, i) => {
+                const start = i * step;
+                const end = (i + 1) * step;
+                const rad = Math.PI / 180;
+
+                const x1 = CONFIG.radius + CONFIG.radius * Math.cos(rad * start);
+                const y1 = CONFIG.radius + CONFIG.radius * Math.sin(rad * start);
+                const x2 = CONFIG.radius + CONFIG.radius * Math.cos(rad * end);
+                const y2 = CONFIG.radius + CONFIG.radius * Math.sin(rad * end);
+
+                const pathData = `M ${CONFIG.radius} ${CONFIG.radius} L ${x1} ${y1} A ${CONFIG.radius} ${CONFIG.radius} 0 0 1 ${x2} ${y2} Z`;
+
+                // Style logic: Index 12 remains STOP, Index 0 remains the active blue slice
+                let fill = i % 2 === 0 ? "var(--wheel-1)" : "var(--wheel-2)";
+                let txtColor = i % 2 === 0 ? "var(--wheel-2)" : "#fff";
+                let fontSize = isOuter ? "3rem" : "5rem";
+
+                if (isOuter) {
+                    if (i === 12) { fill = "#d00000"; txtColor = "#fff"; fontSize = "2.5rem"; }
+                    else if (i === 0) { fill = "#00aeff"; }
+                }
+
+                const midAngle = start + (step / 2);
+                const tx = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.cos(rad * midAngle);
+                const ty = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.sin(rad * midAngle);
+
+                const isStopSlice = (isOuter && i === 12);
+                const isFirstSlice = (isOuter && i === 0);
+
+                // Combine classes: if it's the first slice, add 'swapped-text'; 
+                // if it's the STOP slice, add 'stop-slice-text'
+                let textClass = "";
+                if (isFirstSlice) textClass = 'swapped-text';
+                if (isStopSlice) textClass = 'stop-slice-text';
+
+                const rotation = isStopSlice ? midAngle : (verticalText ? midAngle + 90 : midAngle);
+
+                htmlContent += `
+            <path d="${pathData}" fill="${fill}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+            <text x="${tx}" y="${ty}" 
+                  class="${textClass}"
+                  transform="rotate(${rotation}, ${tx}, ${ty})"
+                  fill="${txtColor}" font-size="${fontSize}" font-weight="400"
+                  text-anchor="middle" alignment-baseline="middle">${text}</text>`;
+            });
+            svg.innerHTML = htmlContent;
+        }
+
+        /* =========================================
+           4. CORE ANIMATION & INTERACTION
+           ============================================ */
+        function animateIdle() {
+            if (!isSpinning) {
+                // Increment naturally without resetting to 0 every 360 degrees
+                outerRotation -= CONFIG.idleSpeed;
+                innerRotation += CONFIG.idleSpeed;
+
+                const ow = document.getElementById('outer-wheel');
+                const iw = document.getElementById('inner-wheel');
+
+                if (ow && iw) {
+                    ow.style.transition = "none";
+                    iw.style.transition = "none";
+                    // REMOVE the % 360 here:
+                    ow.style.transform = `rotate(${outerRotation}deg)`;
+                    iw.style.transform = `translate(-50%, -50%) rotate(${innerRotation}deg)`;
+                }
+            }
+            requestAnimationFrame(animateIdle);
+        }
+
+        function spinWheels() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const ow = document.getElementById('outer-wheel');
+            const iw = document.getElementById('inner-wheel');
+
+            // 1. GENERATE TOTALLY RANDOM ROTATION
+            // We don't pick an index. we pick a random distance.
+            const randomOuterExtra = Math.random() * 360;
+            const randomInnerExtra = Math.random() * 360;
+
+            const outerDelta = (CONFIG.minFullSpins * 360) + randomOuterExtra;
+            const innerDelta = ((CONFIG.minFullSpins + 2) * 360) + randomInnerExtra;
+
+            // 2. APPLY CUMULATIVE ROTATION (Subtract for Clockwise)
+            outerRotation -= outerDelta;
+            innerRotation += innerDelta;
+
+            // 3. EXECUTE GPU-ACCELERATED ANIMATION
+            ow.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
+            ow.style.transform = `rotate(${outerRotation}deg)`;
+
+            iw.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
+            iw.style.transform = `translate(-50%, -50%) rotate(${innerRotation}deg)`;
+
+            // Trigger audio tick engine if available
+            if (typeof startTickEngine === 'function') startTickEngine();
+
+            // 4. WAIT FOR PHYSICAL STOP BEFORE READING RESULTS
+            setTimeout(() => {
+                finalizeSpin();
+            }, CONFIG.spinDuration);
+        }
+
+
+        /**
+ * THE RESULT "READER"
+ * Reads physical wheel positions and handles the auto-scroll log.
+ */
+        function finalizeSpin() {
+    const modal = document.getElementById('modal-overlay');
+    const historyLog = document.getElementById('history-log');
+    const wrapper = historyLog.querySelector('.history-scroll-wrapper');
+
+    // 1. READ PHYSICAL POSITION
+    const normalizedOuter = ((-outerRotation % 360) + 360) % 360;
+    const outerIdx = Math.floor(normalizedOuter / (360 / outerLabels.length));
+    const resNum = outerLabels[outerIdx];
+
+    const normalizedInner = ((-innerRotation % 360) + 360) % 360;
+    const innerIdx = Math.floor(normalizedInner / (360 / innerLabels.length));
+    const resTime = innerLabels[innerIdx];
+
+    // 2. TIMESTAMPS
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // 3. MODAL CUSTOMIZATION FOR "STOP"
+    const result1 = document.getElementById('result-1'); // Prescription Name area
+    const result2 = document.getElementById('result-2'); // Time area
+    const resultNum = document.getElementById('result-num'); // # Number area
+    const firstPara = document.querySelector('.modal-content p:first-child');
+
+    if (firstPara) firstPara.innerText = `${dateStr}, ${timeStr}`;
+
+    if (resNum === "STOP") {
+        // Remove the instruction text and return time for STOP
+        if (instructionPara) instructionPara.style.visibility = 'hidden'; 
+        resultNum.innerText = "#STOP";
+        result1.innerText = "You’ve healed up nicely!";
+        result2.innerText = ""; 
+    } else {
+        // Standard Layout
+        if (instructionPara) instructionPara.style.visibility = 'visible';
+        const resName = medicineMap[resNum] || "Prescription " + resNum;
+        resultNum.innerText = `#${resNum}`;
+        result1.innerText = resName;
+        result2.innerText = resTime;
+    }
+
+    // Trigger Modal
+    if (modal) {
+        modal.style.display = 'flex';
+        if (autoCloseTimer) clearTimeout(autoCloseTimer);
+        autoCloseTimer = setTimeout(() => closeModalAndFlipBack(), 5 * 60 * 1000);
+
+        const resultAudio = new Audio("result.mp3");
+        setTimeout(() => { resultAudio.play().catch(() => {}); }, 300);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => modal.classList.add('active'));
+        });
+    }
+
+    // 4. HISTORY LOG CUSTOMIZATION
+    setTimeout(() => {
+        const entry = document.createElement('div');
+        entry.className = 'history-item';
+
+        if (resNum === "STOP") {
+            // Only show #STOP for stop results
+            entry.innerHTML = `
+                <div class="history-meta"><span>${dateStr}</span> - <span>${timeStr}</span></div>
+                <div class="history-result" style="color: #ff4d4d; font-weight: bold;">#STOP</div>
+            `;
+        } else {
+            const resName = medicineMap[resNum] || "Prescription " + resNum;
+            entry.innerHTML = `
+                <div class="history-meta"><span>${dateStr}</span> - <span>${timeStr}</span></div>
+                <div class="history-result">#${resNum} ${resName} - <span class="history-interval">${resTime}h</span></div>
+            `;
+        }
+
+        if (wrapper) wrapper.prepend(entry);
+        updateHistoryScroll(historyLog, wrapper); // Trigger your stepped scroll
+        isSpinning = false;
+    }, 2500);
+}
+
+        /* =========================================
+           5. UTILS & EVENT LISTENERS
+           ============================================ */
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            document.querySelectorAll('#live-clock').forEach(el => el.textContent = timeStr);
+            document.querySelectorAll('#live-date').forEach(el => el.textContent = dateStr);
+        }
+
+        function toggleFlip() {
+            isFlipped = !isFlipped;
+            const card = document.getElementById('page-card');
+            card.classList.toggle('is-flipped');
+
+            if (isFlipped) {
+                const buttons = document.querySelectorAll('.optional');
+                if (buttons.length > 0) {
+                    currentFocusIndex = 0;
+                    buttons[0].focus();
+                }
+            }
+        }
+
+        function swapOption(medicineName, idNumber) {
+            // Safety check to prevent "undefined" appearing on the wheel
+            if (!idNumber || !medicineName) return;
+
+            // Update the label shown on the wheel slice
+            outerLabels[0] = idNumber;
+
+            // Update the mapping for the modal
+            medicineMap[idNumber] = medicineName;
+
+            // Redraw the wheel with vertical text alignment
+            createWheel('outer-wheel', outerLabels, true);
+        }
+
+        function closeModalAndFlipBack() {
+            const modal = document.getElementById('modal-overlay');
+
+            // Safety: Clear the timer so it doesn't fire after manual close
+            if (autoCloseTimer) {
+                clearTimeout(autoCloseTimer);
+                autoCloseTimer = null;
+            }
+
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    const card = document.querySelector('.main-card');
+                    if (card && card.classList.contains('is-flipped')) {
+                        card.classList.remove('is-flipped');
+                    }
+                }, 500);
+            }
+        }
+
+
+        // Initial Call
+        window.onload = () => {
+            createWheel('outer-wheel', outerLabels, true);
+            createWheel('inner-wheel', innerLabels, true);
+
+            animateIdle();
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            const buttons = document.querySelectorAll('.optional');
+            buttons.forEach((btn, index) => {
+                btn.addEventListener('focus', () => {
+                    currentFocusIndex = index;
+
+                    // Get the ID from the data-id attribute
+                    const idNumber = btn.getAttribute('data-id');
+
+                    // Extract the medicine name from the onclick string safely
+                    const onclickText = btn.getAttribute('onclick') || "";
+                    const match = onclickText.match(/'([^']+)'/);
+                    const medicineName = match ? match[1] : "Prescription";
+
+                    if (idNumber) {
+                        swapOption(medicineName, idNumber);
+                    }
+                });
+
+                btn.addEventListener('mouseenter', () => btn.focus());
+            });
+
+            // Set default focus on first button
+            if (buttons.length > 0) {
+                buttons[0].focus();
+            }
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('button') || e.target.id === 'spin-trigger') {
+                    clickAudio.currentTime = 0;
+                    clickAudio.play().catch(() => { });
+                }
+            });
+        };
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('modal-overlay');
+            const isModalOpen = modal && modal.style.display === 'flex';
+            const buttons = document.querySelectorAll('.optional');
+
+            if (isFlipped && !isModalOpen) {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+
+                    clickAudio.currentTime = 0;
+                    clickAudio.play().catch(() => { });
+
+                    if (e.key === 'ArrowDown') {
+                        currentFocusIndex = (currentFocusIndex + 1) % buttons.length;
+                    } else {
+                        currentFocusIndex = (currentFocusIndex - 1 + buttons.length) % buttons.length;
+                    }
+
+                    const targetBtn = buttons[currentFocusIndex];
+                    targetBtn.focus();
+
+                    const onclickAttr = targetBtn.getAttribute('onclick');
+                    const match = onclickAttr.match(/swapOption\('([^']+)',\s*'([^']+)'\)/);
+
+                    if (match) {
+                        // match[1] is 'Benzonatate', match[2] is '24'
+                        swapOption(match[1], match[2]);
+                    }
+
+                }
+            }
+
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (isModalOpen) closeModalAndFlipBack();
+                else if (!isFlipped) toggleFlip();
+                else spinWheels();
+            }
+        });
+    </script>
+</body>
+
+</html>
