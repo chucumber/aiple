@@ -699,16 +699,16 @@
 
         @keyframes text-pop {
             0% {
-                transform: scale(0.6) rotate(97.5deg) translate(0, -5%);
+                transform: scale(0.6) rotate(97.5deg) translate(0%, -5%);
                 opacity: 0;
             }
 
             70% {
-                transform: scale(1.2) rotate(97.5deg) translate(0, -5%);
+                transform: scale(1.2) rotate(97.5deg) translate(0%, -5%);
             }
 
             100% {
-                transform: scale(1) rotate(97.5deg) translate(0, -5%);
+                transform: scale(1) rotate(97.5deg) translate(0%, -5%);
                 opacity: 1;
             }
         }
@@ -720,7 +720,7 @@
         }
 
         .stop-slice-text {
-            transform: translate(7%, 0) rotate(7.5deg);
+            transform: translate(0%, 0%) rotate(7.5deg);
         }
 
         .instructions,
@@ -1195,6 +1195,7 @@
         let isFlipped = false;
         let currentFocusIndex = -1;
         let autoCloseTimer = null;
+        const FIVE_MINUTES = 5 * 60 * 1000;
 
         /* =========================================
            2. AUDIO ENGINE
@@ -1257,62 +1258,67 @@
            3. WHEEL GENERATION
            ============================================ */
         function createWheel(id, labels, verticalText = false) {
-            const svg = document.getElementById(id);
-            if (!svg) return;
+    const svg = document.getElementById(id);
+    if (!svg) return;
 
-            const count = labels.length;
-            const step = 360 / count;
-            const isOuter = id === 'outer-wheel';
-            const textRadiusMultiplier = isOuter ? 0.85 : 0.65;
+    const count = labels.length;
+    const step = 360 / count;
+    const isOuter = id === 'outer-wheel';
+    const textRadiusMultiplier = isOuter ? 0.85 : 0.65;
 
-            let htmlContent = '';
-            labels.forEach((text, i) => {
-                const start = i * step;
-                const end = (i + 1) * step;
-                const rad = Math.PI / 180;
+    let htmlContent = '';
+    labels.forEach((text, i) => {
+        const start = i * step;
+        const end = (i + 1) * step;
+        const rad = Math.PI / 180;
 
-                const x1 = CONFIG.radius + CONFIG.radius * Math.cos(rad * start);
-                const y1 = CONFIG.radius + CONFIG.radius * Math.sin(rad * start);
-                const x2 = CONFIG.radius + CONFIG.radius * Math.cos(rad * end);
-                const y2 = CONFIG.radius + CONFIG.radius * Math.sin(rad * end);
+        const x1 = CONFIG.radius + CONFIG.radius * Math.cos(rad * start);
+        const y1 = CONFIG.radius + CONFIG.radius * Math.sin(rad * start);
+        const x2 = CONFIG.radius + CONFIG.radius * Math.cos(rad * end);
+        const y2 = CONFIG.radius + CONFIG.radius * Math.sin(rad * end);
 
-                const pathData = `M ${CONFIG.radius} ${CONFIG.radius} L ${x1} ${y1} A ${CONFIG.radius} ${CONFIG.radius} 0 0 1 ${x2} ${y2} Z`;
+        const pathData = `M ${CONFIG.radius} ${CONFIG.radius} L ${x1} ${y1} A ${CONFIG.radius} ${CONFIG.radius} 0 0 1 ${x2} ${y2} Z`;
 
-                // Style logic: Index 12 remains STOP, Index 0 remains the active blue slice
-                let fill = i % 2 === 0 ? "var(--wheel-1)" : "var(--wheel-2)";
-                let txtColor = i % 2 === 0 ? "var(--wheel-2)" : "#fff";
-                let fontSize = isOuter ? "3rem" : "5rem";
+        let fill = i % 2 === 0 ? "var(--wheel-1)" : "var(--wheel-2)";
+        let txtColor = i % 2 === 0 ? "var(--wheel-2)" : "#fff";
+        let fontSize = isOuter ? "3rem" : "5rem";
 
-                if (isOuter) {
-                    if (i === 12) { fill = "#d00000"; txtColor = "#fff"; fontSize = "2.5rem"; }
-                    else if (i === 0) { fill = "#00aeff"; }
-                }
-
-                const midAngle = start + (step / 2);
-                const tx = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.cos(rad * midAngle);
-                const ty = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.sin(rad * midAngle);
-
-                const isStopSlice = (isOuter && i === 12);
-                const isFirstSlice = (isOuter && i === 0);
-
-                // Combine classes: if it's the first slice, add 'swapped-text'; 
-                // if it's the STOP slice, add 'stop-slice-text'
-                let textClass = "";
-                if (isFirstSlice) textClass = 'swapped-text';
-                if (isStopSlice) textClass = 'stop-slice-text';
-
-                const rotation = isStopSlice ? midAngle : (verticalText ? midAngle + 90 : midAngle);
-
-                htmlContent += `
-            <path d="${pathData}" fill="${fill}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
-            <text x="${tx}" y="${ty}" 
-                  class="${textClass}"
-                  transform="rotate(${rotation}, ${tx}, ${ty})"
-                  fill="${txtColor}" font-size="${fontSize}" font-weight="400"
-                  text-anchor="middle" alignment-baseline="middle">${text}</text>`;
-            });
-            svg.innerHTML = htmlContent;
+        if (isOuter) {
+            if (i === 12) { fill = "#d00000"; txtColor = "#fff"; fontSize = "2.5rem"; }
+            else if (i === 0) { fill = "#00aeff"; }
         }
+
+        const midAngle = start + (step / 2);
+        const tx = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.cos(rad * midAngle);
+        const ty = CONFIG.radius + (CONFIG.radius * textRadiusMultiplier) * Math.sin(rad * midAngle);
+
+        const isStopSlice = (isOuter && i === 12);
+        const isFirstSlice = (isOuter && i === 0);
+
+        // Safari Fix: Compute rotation explicitly
+        // VerticalText logic: add 90 to align text along the radius
+        let rotation = verticalText ? midAngle + 90 : midAngle;
+        
+        // Special case for the STOP label to keep it horizontal-ish
+        if (isStopSlice) {
+            rotation = midAngle; 
+        }
+
+        // We use dominant-baseline for Safari compatibility instead of alignment-baseline
+        htmlContent += `
+    <path d="${pathData}" fill="${fill}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+    <text x="${tx}" y="${ty}" 
+          class="${isFirstSlice ? 'swapped-text' : ''} ${isStopSlice ? 'stop-slice-text' : ''}"
+          transform="rotate(${rotation}, ${tx}, ${ty})"
+          fill="${txtColor}" 
+          font-size="${fontSize}" 
+          font-weight="400"
+          font-family="inherit"
+          text-anchor="middle" 
+          dominant-baseline="central">${text}</text>`;
+    });
+    svg.innerHTML = htmlContent;
+}
 
         /* =========================================
            4. CORE ANIMATION & INTERACTION
@@ -1338,51 +1344,45 @@
         }
 
         function spinWheels() {
-            if (isSpinning) return;
-            isSpinning = true;
+    if (isSpinning) return;
+    
+    // Close modal if user spins while it's open
+    const modal = document.getElementById('modal-overlay');
+    if (modal && modal.style.display === 'flex') {
+        closeModalAndFlipBack();
+        return;
+    }
 
-            const ow = document.getElementById('outer-wheel');
-            const iw = document.getElementById('inner-wheel');
+    isSpinning = true;
 
-            // 1. GENERATE TOTALLY RANDOM ROTATION
-            // We don't pick an index. we pick a random distance.
-            const randomOuterExtra = Math.random() * 360;
-            const randomInnerExtra = Math.random() * 360;
+    const ow = document.getElementById('outer-wheel');
+    const iw = document.getElementById('inner-wheel');
 
-            const outerDelta = (CONFIG.minFullSpins * 360) + randomOuterExtra;
-            const innerDelta = ((CONFIG.minFullSpins + 2) * 360) + randomInnerExtra;
+    // Physical Randomization (Absolute Rotation)
+    const outerDelta = (6 * 360) + (Math.random() * 360);
+    const innerDelta = (8 * 360) + (Math.random() * 360);
 
-            // 2. APPLY CUMULATIVE ROTATION (Subtract for Clockwise)
-            outerRotation -= outerDelta;
-            innerRotation += innerDelta;
+    outerRotation -= outerDelta;
+    innerRotation += innerDelta;
 
-            // 3. EXECUTE GPU-ACCELERATED ANIMATION
-            ow.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
-            ow.style.transform = `rotate(${outerRotation}deg)`;
+    ow.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
+    ow.style.transform = `rotate(${outerRotation}deg)`;
 
-            iw.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
-            iw.style.transform = `translate(-50%, -50%) rotate(${innerRotation}deg)`;
+    iw.style.transition = `transform ${CONFIG.spinDuration}ms ${CONFIG.spinEasing}`;
+    iw.style.transform = `translate(-50%, -50%) rotate(${innerRotation}deg)`;
 
-            // Trigger audio tick engine if available
-            if (typeof startTickEngine === 'function') startTickEngine();
+    if (typeof startTickEngine === 'function') startTickEngine();
 
-            // 4. WAIT FOR PHYSICAL STOP BEFORE READING RESULTS
-            setTimeout(() => {
-                finalizeSpin();
-            }, CONFIG.spinDuration);
-        }
+    setTimeout(() => finalizeSpin(), CONFIG.spinDuration);
+}
 
-
-        /**
- * THE RESULT "READER"
- * Reads physical wheel positions and handles the auto-scroll log.
- */
-        function finalizeSpin() {
+// --- 3. THE RESULT HANDLER ---
+function finalizeSpin() {
     const modal = document.getElementById('modal-overlay');
     const historyLog = document.getElementById('history-log');
     const wrapper = historyLog.querySelector('.history-scroll-wrapper');
-
-    // 1. READ PHYSICAL POSITION
+    
+    // Read final positions from current physical state
     const normalizedOuter = ((-outerRotation % 360) + 360) % 360;
     const outerIdx = Math.floor(normalizedOuter / (360 / outerLabels.length));
     const resNum = outerLabels[outerIdx];
@@ -1391,57 +1391,59 @@
     const innerIdx = Math.floor(normalizedInner / (360 / innerLabels.length));
     const resTime = innerLabels[innerIdx];
 
-    // 2. TIMESTAMPS
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // 3. MODAL CUSTOMIZATION FOR "STOP"
-    const result1 = document.getElementById('result-1'); // Prescription Name area
-    const result2 = document.getElementById('result-2'); // Time area
-    const resultNum = document.getElementById('result-num'); // # Number area
-    const firstPara = document.querySelector('.modal-content p:first-child');
+    // UI Elements
+    const resultNum = document.getElementById('result-num');
+    const result1 = document.getElementById('result-1');
+    const result2 = document.getElementById('result-2');
+    const headerPara = document.querySelector('.modal-content p:first-child');
+    const instructionPara = document.querySelector('.modal-content p:nth-child(2)');
+    const returnTimePara = document.querySelector('.modal-content p:last-of-type');
 
-    if (firstPara) firstPara.innerText = `${dateStr}, ${timeStr}`;
+    if (headerPara) headerPara.innerText = `${dateStr}, ${timeStr}`;
 
+    // --- APPLY "STOP" OR "MEDICINE" LOGIC ---
     if (resNum === "STOP") {
-        // Remove the instruction text and return time for STOP
-        if (instructionPara) instructionPara.style.visibility = 'hidden'; 
+        if (instructionPara) instructionPara.style.display = 'none';
+        if (returnTimePara) returnTimePara.style.display = 'none';
         resultNum.innerText = "#STOP";
-        result1.innerText = "You’ve healed up nicely!";
+        result1.innerText = "You should stop now";
         result2.innerText = ""; 
     } else {
-        // Standard Layout
-        if (instructionPara) instructionPara.style.visibility = 'visible';
+        if (instructionPara) instructionPara.style.display = 'block';
+        if (returnTimePara) returnTimePara.style.display = 'block';
         const resName = medicineMap[resNum] || "Prescription " + resNum;
         resultNum.innerText = `#${resNum}`;
         result1.innerText = resName;
         result2.innerText = resTime;
     }
 
-    // Trigger Modal
+    // Show Modal & Start 5-min Timer
     if (modal) {
         modal.style.display = 'flex';
         if (autoCloseTimer) clearTimeout(autoCloseTimer);
-        autoCloseTimer = setTimeout(() => closeModalAndFlipBack(), 5 * 60 * 1000);
+        autoCloseTimer = setTimeout(() => closeModalAndFlipBack(), FIVE_MINUTES);
 
         const resultAudio = new Audio("result.mp3");
         setTimeout(() => { resultAudio.play().catch(() => {}); }, 300);
+        
         requestAnimationFrame(() => {
             requestAnimationFrame(() => modal.classList.add('active'));
         });
     }
 
-    // 4. HISTORY LOG CUSTOMIZATION
+    // Update History Log
     setTimeout(() => {
         const entry = document.createElement('div');
-        entry.className = 'history-item';
-
+        entry.className = 'history-item' + (resNum === "STOP" ? " stop-result" : "");
+        
         if (resNum === "STOP") {
-            // Only show #STOP for stop results
             entry.innerHTML = `
                 <div class="history-meta"><span>${dateStr}</span> - <span>${timeStr}</span></div>
-                <div class="history-result" style="color: #ff4d4d; font-weight: bold;">#STOP</div>
+                <div class="history-result">#STOP</div>
             `;
         } else {
             const resName = medicineMap[resNum] || "Prescription " + resNum;
@@ -1452,9 +1454,69 @@
         }
 
         if (wrapper) wrapper.prepend(entry);
-        updateHistoryScroll(historyLog, wrapper); // Trigger your stepped scroll
+        updateHistoryScroll(historyLog, wrapper);
         isSpinning = false;
-    }, 2500);
+    }, CONFIG.historyDelay);
+}
+
+// --- 4. TOGGLE FLIP & RESET FUNCTIONS ---
+function toggleFlip() {
+    if (isSpinning) return;
+    isFlipped = !isFlipped;
+    const card = document.getElementById('page-card');
+    card.classList.toggle('is-flipped');
+
+    if (isFlipped) {
+        const buttons = document.querySelectorAll('.optional');
+        if (buttons.length > 0) {
+            currentFocusIndex = 0;
+            buttons[0].focus();
+        }
+    }
+}
+
+function closeModalAndFlipBack() {
+    const modal = document.getElementById('modal-overlay');
+    
+    // Clear the timer
+    if (autoCloseTimer) {
+        clearTimeout(autoCloseTimer);
+        autoCloseTimer = null;
+    }
+
+    // Trigger your integrated flip logic to reset state correctly
+    if (isFlipped) {
+        toggleFlip();
+    }
+
+    // Close Modal
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            // Restore hidden elements for next standard spin
+            const instructionPara = document.querySelector('.modal-content p:nth-child(2)');
+            const returnTimePara = document.querySelector('.modal-content p:last-of-type');
+            if (instructionPara) instructionPara.style.display = 'block';
+            if (returnTimePara) returnTimePara.style.display = 'block';
+        }, 500);
+    }
+}
+
+/**
+ * UTILITY: Handles the stepped marquee scroll
+ */
+function updateHistoryScroll(container, wrapper) {
+    const containerHeight = container.offsetHeight;
+    const contentHeight = wrapper.scrollHeight;
+
+    if (contentHeight > containerHeight) {
+        const scrollDist = containerHeight - contentHeight - 10;
+        wrapper.style.setProperty('--scroll-dist', `${scrollDist}px`);
+        const duration = (Math.abs(scrollDist) / 25) * 3; 
+        wrapper.style.animationDuration = `${duration}s`;
+        wrapper.classList.add('scrolling-active');
+    }
 }
 
         /* =========================================
@@ -1466,20 +1528,6 @@
             const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             document.querySelectorAll('#live-clock').forEach(el => el.textContent = timeStr);
             document.querySelectorAll('#live-date').forEach(el => el.textContent = dateStr);
-        }
-
-        function toggleFlip() {
-            isFlipped = !isFlipped;
-            const card = document.getElementById('page-card');
-            card.classList.toggle('is-flipped');
-
-            if (isFlipped) {
-                const buttons = document.querySelectorAll('.optional');
-                if (buttons.length > 0) {
-                    currentFocusIndex = 0;
-                    buttons[0].focus();
-                }
-            }
         }
 
         function swapOption(medicineName, idNumber) {
@@ -1494,27 +1542,6 @@
 
             // Redraw the wheel with vertical text alignment
             createWheel('outer-wheel', outerLabels, true);
-        }
-
-        function closeModalAndFlipBack() {
-            const modal = document.getElementById('modal-overlay');
-
-            // Safety: Clear the timer so it doesn't fire after manual close
-            if (autoCloseTimer) {
-                clearTimeout(autoCloseTimer);
-                autoCloseTimer = null;
-            }
-
-            if (modal) {
-                modal.classList.remove('active');
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    const card = document.querySelector('.main-card');
-                    if (card && card.classList.contains('is-flipped')) {
-                        card.classList.remove('is-flipped');
-                    }
-                }, 500);
-            }
         }
 
 
