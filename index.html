@@ -697,7 +697,7 @@
             color: #fff;
             border: #acacac solid 4px;
             border-radius: 16px;
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
 
         .info {
@@ -1471,8 +1471,8 @@
 
             // Close Modal
             if (modal) {
-                modal.classList.remove('active');
                 setTimeout(() => {
+                                    modal.classList.remove('active');
                     modal.style.display = 'none';
                     // Restore hidden elements for next standard spin
                     const instructionPara = document.querySelector('.modal-content p:nth-child(2)');
