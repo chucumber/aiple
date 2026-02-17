@@ -525,7 +525,7 @@
             top: 50%;
             left: 50%;
             width: calc(var(--wheel-size) / 5);
-            height: 5px;
+            height: 10px;
             background: var(--accent);
             transform-origin: left center;
             transform: translateY(-50%);
@@ -535,15 +535,15 @@
         /* The Triangle Head */
         .hand-head {
             position: absolute;
-            right: -22px;
+            right: -32px;
             /* Pulls the triangle slightly past the bar */
             top: 50%;
             transform: translateY(-50%);
             width: 0;
             height: 0;
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-left: 25px solid var(--accent);
+            border-top: 25px solid transparent;
+            border-bottom: 25px solid transparent;
+            border-left: 35px solid var(--accent);
             /* Triangle points right */
         }
 
@@ -703,7 +703,7 @@
             padding: 1rem;
             margin: 0 0 1rem 0;
             line-height: 1.5;
-                        font-size: 1.2rem;
+            font-size: 1.2rem;
         }
 
         .instructions ul {
@@ -711,7 +711,7 @@
             padding: 1rem;
             margin: 0;
             line-height: 2;
-                        font-size: 1.5rem;
+            font-size: 1.5rem;
         }
 
         .instructions .arrow {
@@ -1026,7 +1026,7 @@
                     <svg id="center-caps" viewBox="0 0 500 500"
                         style="position: absolute; z-index: 50; pointer-events: none;">
                         <circle cx="250" cy="250" r="30" fill="var(--black)" />
-                        <circle cx="250" cy="250" r="8" fill="var(--accent)" stroke="#fff" stroke-width="3" />
+                        <circle cx="250" cy="250" r="10" fill="var(--accent)" stroke="#fff" stroke-width="4" />
                     </svg>
 
                     <div class="clock-hand">
@@ -1092,9 +1092,9 @@
    1. DATA & CONFIGURATION
    ============================================ */
         const outerLabels = [
-            "1", "9", "15", "23", "11", "8", "14", "2", "16", "19",
-            "10", "6", "STOP", "17", "3", "12", "21", "4",
-            "13", "22", "7", "18", "5", "20"
+            "1", "9", "28", "23", "11", "32", "14", "2", "16", "19",
+            "25", "6", "STOP", "17", "3", "12", "21", "4",
+            "31", "24", "7", "18", "5", "27"
         ];
 
         const innerLabels = ["4", "24", "12", "72", "8", "36"];
@@ -1142,12 +1142,21 @@
             radius: 250,
             spinEasing: 'cubic-bezier(0.2, 0, 0, 1.08)', // High inertia + rebound
             historyDelay: 2500,               // Match apple-drop animation
-            minFullSpins: 6,                   // Minimum rotations for momentum
             tickVolume: 1,
         };
 
         const clickAudio = new Audio("button-click.wav");
         clickAudio.volume = 1;
+
+        const bgMusic = new Audio("Children's March Theme.ogg");
+        bgMusic.loop = true;
+        bgMusic.volume = 0.3;
+
+        const wheelMusic = new Audio("curious_theme.wav");
+        wheelMusic.loop = true;
+        wheelMusic.volume = 0.3;
+
+        let musicTimeout = null;
 
         // State
         let outerRotation = 0;
@@ -1157,13 +1166,14 @@
         let currentFocusIndex = -1;
         let autoCloseTimer = null;
         let canCloseModal = false;
+        let globalInactivityTimer = null;
         const FIVE_MINUTES = 5 * 60 * 1000;
 
         /* =========================================
            2. AUDIO ENGINE
            ============================================ */
         // Update with your own source here (e.g., a local file or URL)
-        const TICK_SOURCE = "spinning-sound.mp3";
+        const TICK_SOURCE = "beep.mp3";
 
         const tickAudio = new Audio(TICK_SOURCE);
         tickAudio.load();
@@ -1244,7 +1254,7 @@
                 // Style logic: Index 12 remains STOP, Index 0 remains the active blue slice
                 let fill = i % 2 === 0 ? "var(--wheel-1)" : "var(--wheel-2)";
                 let txtColor = i % 2 === 0 ? "var(--wheel-2)" : "#fff";
-                let fontSize = isOuter ? "3rem" : "5rem";
+                let fontSize = isOuter ? "3rem" : "4.75rem";
 
                 if (isOuter) {
                     if (i === 12) { fill = "#d00000"; txtColor = "#fff"; fontSize = "2.5rem"; }
@@ -1316,8 +1326,8 @@
             const iw = document.getElementById('inner-wheel');
 
             // Physical Randomization (Absolute Rotation)
-            let outerDelta = (6 * 360) + (Math.random() * 360);
-            const innerDelta = (8 * 360) + (Math.random() * 360);
+            let outerDelta = (4 * 360) + (Math.random() * 360);
+            const innerDelta = (6 * 360) + (Math.random() * 360);
 
             // --- RIGGING LOGIC: Ensure we never land on STOP ---
             const sliceAngle = 360 / outerLabels.length; // 15 degrees per slice
@@ -1436,19 +1446,58 @@
         }
 
         // --- 4. TOGGLE FLIP & RESET FUNCTIONS ---
+
+        function resetGlobalInactivity() {
+            // Clear the existing timer
+            if (globalInactivityTimer) clearTimeout(globalInactivityTimer);
+
+            // Only run this timer if we are on the back page
+            if (isFlipped) {
+                globalInactivityTimer = setTimeout(() => {
+                    const modal = document.getElementById('modal-overlay');
+                    const isModalOpen = modal && modal.style.display === 'flex';
+
+                    if (isModalOpen) {
+                        // Force close the modal and flip back
+                        // We bypass the safety lock for an auto-timeout
+                        canCloseModal = true;
+                        closeModalAndFlipBack();
+                    } else if (!isSpinning) {
+                        // If just idle on the wheel page, flip back
+                        toggleFlip();
+                    }
+                }, FIVE_MINUTES);
+            }
+        }
+
         function toggleFlip() {
             if (isSpinning) return;
+
+            // 1. Stop all music immediately
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            wheelMusic.pause();
+            wheelMusic.currentTime = 0;
+
+            // 2. Clear any pending music starts from a previous flip
+            if (musicTimeout) clearTimeout(musicTimeout);
+            // Clear the timer immediately during a transition
+            if (globalInactivityTimer) clearTimeout(globalInactivityTimer);
+
+            // 3. Perform the visual flip
             isFlipped = !isFlipped;
             const card = document.getElementById('page-card');
             card.classList.toggle('is-flipped');
 
-            if (isFlipped) {
-                const buttons = document.querySelectorAll('.optional');
-                if (buttons.length > 0) {
-                    currentFocusIndex = 0;
-                    buttons[0].focus();
+            // 4. Set a 3-second delay for the new music
+            musicTimeout = setTimeout(() => {
+                if (isFlipped) {
+                    wheelMusic.play().catch(e => console.log("Back music blocked"));
+                } else {
+                    bgMusic.play().catch(e => console.log("Front music blocked"));
                 }
-            }
+            }, 1500);
+
         }
 
         function closeModalAndFlipBack() {
@@ -1473,7 +1522,7 @@
             // Close Modal
             if (modal) {
                 setTimeout(() => {
-                                    modal.classList.remove('active');
+                    modal.classList.remove('active');
                     modal.style.display = 'none';
                     // Restore hidden elements for next standard spin
                     const instructionPara = document.querySelector('.modal-content p:nth-child(2)');
@@ -1535,6 +1584,17 @@
             setInterval(updateClock, 1000);
             updateClock();
 
+            bgMusic.play().catch(() => {
+                // Backup: Play on the very first keydown or click
+                const startMusic = () => {
+                    if (!isFlipped) bgMusic.play();
+                    document.removeEventListener('keydown', startMusic);
+                    document.removeEventListener('click', startMusic);
+                };
+                document.addEventListener('keydown', startMusic);
+                document.addEventListener('click', startMusic);
+            });
+
             const buttons = document.querySelectorAll('.optional');
             buttons.forEach((btn, index) => {
                 btn.addEventListener('focus', () => {
@@ -1567,6 +1627,11 @@
                     clickAudio.play().catch(() => { });
                 }
             });
+
+            const activities = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+            activities.forEach(event => {
+                document.addEventListener(event, resetGlobalInactivity, { passive: true });
+            });
         };
 
         // Keyboard Controls
@@ -1597,7 +1662,6 @@
                     const match = onclickAttr.match(/swapOption\('([^']+)',\s*'([^']+)'\)/);
 
                     if (match) {
-                        // match[1] is 'Benzonatate', match[2] is '24'
                         swapOption(match[1], match[2]);
                     }
 
