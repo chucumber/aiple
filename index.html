@@ -1039,15 +1039,13 @@
                 <div class="optional-panel">
                     <button class="optional" data-id="1" onclick="swapOption('Bromelain/L-cysteine', '1')">1</button>
                     <button class="optional" data-id="13" onclick="swapOption('Dicyclomine', '13')">13</button>
-                    <button class="optional" data-id=22" onclick="swapOption('Phosphatidylserine', '22')">22</button>
+                    <button class="optional" data-id="22" onclick="swapOption('Phosphatidylserine', '22')">22</button>
                     <button class="optional" data-id="30" onclick="swapOption('Biofermin', '30')">30</button>
                     <button class="optional" data-id="10" onclick="swapOption('Loperamide', '10')">10</button>
-                    <button class="optional" data-id="29"
-                        onclick="swapOption('Chlorpheniramine Maleate', '29')">29</button>
+                    <button class="optional" data-id="29" onclick="swapOption('Chlorpheniramine Maleate', '29')">29</button>
                     <button class="optional" data-id="26" onclick="swapOption('Phosphatidylserine', '26')">26</button>
                     <button class="optional" data-id="15" onclick="swapOption('Loperamide', '15')">15</button>
-                    <button class="optional" data-id="20"
-                        onclick="swapOption('Dexchlorpheniramine Maleate', '20')">20</button>
+                    <button class="optional" data-id="20" onclick="swapOption('Dexchlorpheniramine Maleate', '20')">20</button>
                     <button class="optional" data-id="8" onclick="swapOption('Tirzepatide', '8')">8</button>
                 </div>
 
@@ -1329,17 +1327,17 @@
             let outerDelta = (4 * 360) + (Math.random() * 360);
             const innerDelta = (6 * 360) + (Math.random() * 360);
 
-            // --- RIGGING LOGIC: Ensure we never land on STOP ---
-            const sliceAngle = 360 / outerLabels.length; // 15 degrees per slice
-            // Pre-calculate where the wheel would land based on the current rotation and delta
-            let potentialFinal = ((-(outerRotation - outerDelta) % 360) + 360) % 360;
-            let landingIdx = Math.floor(potentialFinal / sliceAngle);
+            // // --- RIGGING LOGIC: Ensure we never land on STOP ---
+            // const sliceAngle = 360 / outerLabels.length; // 15 degrees per slice
+            // // Pre-calculate where the wheel would land based on the current rotation and delta
+            // let potentialFinal = ((-(outerRotation - outerDelta) % 360) + 360) % 360;
+            // let landingIdx = Math.floor(potentialFinal / sliceAngle);
 
-            // If the calculated winner is "STOP", adjust the delta by one full slice to overshoot it
-            if (outerLabels[landingIdx] === "STOP") {
-                outerDelta += sliceAngle;
-            }
-            // --------------------------------------------------
+            // // If the calculated winner is "STOP", adjust the delta by one full slice to overshoot it
+            // if (outerLabels[landingIdx] === "STOP") {
+            //     outerDelta += sliceAngle;
+            // }
+            // // --------------------------------------------------
 
             outerRotation -= outerDelta;
             innerRotation += innerDelta;
